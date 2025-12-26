@@ -27,6 +27,26 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
+// exports.createOrder = async (req, res) => {
+//   const { userId, dishes, totalPrice } = req.body;
+
+//   try {
+//     console.log("Incoming order data:", req.body);
+
+//     const order = new Order({
+//       userId,   
+//       dishes,
+//       totalPrice,
+//     });
+
+//     const savedOrder = await order.save();
+
+//     res.status(201).json(savedOrder);
+//   } catch (err) {
+//     console.error("Create Order Error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 exports.createOrder = async (req, res) => {
   const { userId, dishes, totalPrice } = req.body;
 
@@ -37,6 +57,7 @@ exports.createOrder = async (req, res) => {
       userId,   
       dishes,
       totalPrice,
+      status: "pending" // ya "abhi aayega"
     });
 
     const savedOrder = await order.save();
@@ -136,5 +157,27 @@ exports.getOrdersByUserID = async (req, res) => {
       success: false,
       message: "Server error",
     });
+  }
+};
+exports.markOrderAsCompleted = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    order.status = "completed"; // ya "khaya gaya"
+    await order.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Order marked as completed successfully",
+      order
+    });
+  } catch (err) {
+    console.error("Mark Order Completed Error:", err);
+    res.status(500).json({ success: false, message: err.message });
   }
 };
