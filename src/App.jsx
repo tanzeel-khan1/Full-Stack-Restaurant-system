@@ -20,6 +20,7 @@ import Profile from "./pages/Profile";
 import SignupPage from "./pages/Signup";
 import AllOrders from "./pages/admin/AllOrders";
 import AllTables from "./pages/admin/AllTables";
+import Payment from "./pages/Payment";
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ function PrivateRoute({ children }) {
 
 function AdminRoute({ children }) {
   const { user } = useAuth();
-  return user && user.role === "admin" ? children : <Navigate to="/login" />;
+  return user && user.role === "admin" ? children : <Navigate to="/" />;
 }
 
 function App() {
@@ -46,11 +47,20 @@ function App() {
               </PrivateRoute>
             }
           />
+          
           <Route
             path="/dishes"
             element={
               <PrivateRoute>
                 <DishForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/payment/:tableId"
+            element={
+              <PrivateRoute>
+                <Payment />
               </PrivateRoute>
             }
           />
