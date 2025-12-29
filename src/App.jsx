@@ -21,6 +21,7 @@ import SignupPage from "./pages/Signup";
 import AllOrders from "./pages/admin/AllOrders";
 import AllTables from "./pages/admin/AllTables";
 import Payment from "./pages/Payment";
+import ContactForm from "./pages/ContactForm";
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -47,7 +48,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          
+
           <Route
             path="/dishes"
             element={
@@ -61,6 +62,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Payment />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <PrivateRoute>
+                <ContactForm />
               </PrivateRoute>
             }
           />
@@ -104,7 +113,7 @@ function App() {
               </PrivateRoute>
             }
           />
-                    <Route
+          <Route
             path="/profile"
             element={
               <PrivateRoute>
@@ -112,7 +121,7 @@ function App() {
               </PrivateRoute>
             }
           />
-                    <Route
+          <Route
             path="/signup"
             element={
               <PrivateRoute>

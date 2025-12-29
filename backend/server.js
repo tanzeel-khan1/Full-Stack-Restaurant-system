@@ -13,6 +13,7 @@ const dishRoutes = require("./routes/dishes");
 const tableRoutes = require("./routes/tables");
 const orderRoutes = require("./routes/orders");
 const adminRoutes = require("./routes/admin");
+const contactRoutes = require("./routes/contactRoutes");
 
 console.log("authRoutes type:", typeof authRoutes);
 console.log("dishRoutes type:", typeof dishRoutes);
@@ -25,17 +26,19 @@ app.use("/api/dishes", dishRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.get("/", (req, res) => {
   res.send("Restaurant API is running...");
 });
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.error("MongoDB connection error:", err));
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
