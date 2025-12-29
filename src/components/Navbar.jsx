@@ -12,9 +12,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#181C14] shadow-orange-400 relative z-50 backdrop-blur-sm"
-    style={{ boxShadow: "0 4px 8px rgba(261, 146, 60, 0.5)" }} // orange-400
-
+    <nav
+      className="bg-[#181C14] shadow-orange-400 relative z-50 backdrop-blur-sm"
+      style={{ boxShadow: "0 4px 8px rgba(261, 146, 60, 0.5)" }} // orange-400
     >
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-18 lg:h-20">
@@ -41,11 +41,19 @@ const Navbar = () => {
               About
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
             </a>
+
             <a
               href="/location"
               className="text-amber-400 hover:text-amber-400 px-3 py-2 text-sm lg:text-base font-medium transition-all duration-300 hover:scale-105 relative group"
             >
               Location
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
+            </a>
+            <a
+              href="/contact"
+              className="text-amber-400 hover:text-amber-400 px-3 py-2 text-sm lg:text-base font-medium transition-all duration-300 hover:scale-105 relative group"
+            >
+              Contact
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
             </a>
             <a
