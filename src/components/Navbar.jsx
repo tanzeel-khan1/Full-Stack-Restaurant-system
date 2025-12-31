@@ -113,6 +113,8 @@ const Navbar = () => {
             { name: "Dashboard", path: "/dashboard" },
             { name: "About", path: "/about" },
             { name: "Location", path: "/location" },
+            { name: "Contact", path: "/contact" },
+
             { name: "Profile", path: "/profile" },
           ].map((item) => (
             <a

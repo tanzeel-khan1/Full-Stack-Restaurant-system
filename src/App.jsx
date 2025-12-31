@@ -22,6 +22,7 @@ import AllOrders from "./pages/admin/AllOrders";
 import AllTables from "./pages/admin/AllTables";
 import Payment from "./pages/Payment";
 import ContactForm from "./pages/ContactForm";
+import { Toaster } from "sonner";
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -37,6 +38,16 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+<Toaster
+  position="top-center"
+  richColors
+  toastOptions={{
+    style: {
+      textAlign: "center",
+    },
+  }}
+/>
+
         <Routes>
           <Route path="/login" element={<Login />} />
 

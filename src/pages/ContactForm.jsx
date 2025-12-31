@@ -1,9 +1,23 @@
 import { useCreateContact } from "../hooks/useContact";
 import Navbar from "../components/Navbar";
 import { useForm } from "react-hook-form";
-import { toast, ToastContainer } from "react-toastify";
+import { toast, Toaster } from "sonner"; 
 import { useNavigate } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
+import { motion } from "framer-motion";
+
+const formVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
+const inputVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: (i) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.1, duration: 0.5 },
+  }),
+};
 
 const ContactForm = () => {
   const { mutate, isLoading } = useCreateContact();
@@ -19,16 +33,12 @@ const ContactForm = () => {
   const onSubmit = (data) => {
     mutate(data, {
       onSuccess: () => {
-        toast.success("Your Message sent successfully ✅");
-
+        toast.success("Your Message sent successfully "); // <-- sonner toast
         reset();
-
-        setTimeout(() => {
-          navigate("/");
-        }, 1500);
+        setTimeout(() => navigate("/"), 1500);
       },
       onError: () => {
-        toast.error("Something went wrong ❌");
+        toast.error("Something went wrong ❌"); // <-- sonner toast
       },
     });
   };
@@ -36,20 +46,25 @@ const ContactForm = () => {
   return (
     <>
       <Navbar />
-      <ToastContainer position="top-right" theme="dark" />
 
       <div className="min-h-screen flex items-center justify-center bg-[#181C14] px-4">
-        <form
+        <motion.form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full max-w-md bg-black/30 backdrop-blur-md 
-          p-6 rounded-xl shadow-lg shadow-amber-400/30 space-y-5"
+          className="w-full max-w-md bg-black/30 backdrop-blur-md p-6 rounded-xl shadow-lg shadow-amber-400/30 space-y-5"
+          variants={formVariants}
+          initial="hidden"
+          animate="visible"
         >
-          <h2 className="text-2xl font-semibold text-center text-[#D4AF37]">
+          <motion.h2
+            className="text-2xl font-semibold text-center text-[#D4AF37]"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.5 } }}
+          >
             Contact Us
-          </h2>
+          </motion.h2>
 
           {/* Name */}
-          <div>
+          <motion.div variants={inputVariants} custom={0}>
             <input
               type="text"
               placeholder="Your Name"
@@ -61,10 +76,10 @@ const ContactForm = () => {
             {errors.name && (
               <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>
             )}
-          </div>
+          </motion.div>
 
           {/* Email */}
-          <div>
+          <motion.div variants={inputVariants} custom={1}>
             <input
               type="email"
               placeholder="Your Email"
@@ -80,14 +95,12 @@ const ContactForm = () => {
               focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
             {errors.email && (
-              <p className="text-red-400 text-xs mt-1">
-                {errors.email.message}
-              </p>
+              <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
             )}
-          </div>
+          </motion.div>
 
           {/* Message */}
-          <div>
+          <motion.div variants={inputVariants} custom={2}>
             <textarea
               rows="4"
               placeholder="Your Message"
@@ -103,23 +116,23 @@ const ContactForm = () => {
               focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
             {errors.message && (
-              <p className="text-red-400 text-xs mt-1">
-                {errors.message.message}
-              </p>
+              <p className="text-red-400 text-xs mt-1">{errors.message.message}</p>
             )}
-          </div>
+          </motion.div>
 
-          <button
+          <motion.button
             type="submit"
             disabled={isLoading}
             className="w-full py-3 rounded font-medium
-            bg-[#D4AF37] text-[#181C14]
+            bg-[#D4AF37] text-[#181C14] cursor-pointer
             hover:bg-amber-400 transition
             disabled:opacity-50 disabled:cursor-not-allowed"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             {isLoading ? "Sending..." : "Send Message"}
-          </button>
-        </form>
+          </motion.button>
+        </motion.form>
       </div>
     </>
   );
