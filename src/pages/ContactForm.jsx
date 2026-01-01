@@ -1,7 +1,7 @@
 import { useCreateContact } from "../hooks/useContact";
 import Navbar from "../components/Navbar";
 import { useForm } from "react-hook-form";
-import { toast, Toaster } from "sonner"; 
+import { toast, Toaster } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -95,7 +95,9 @@ const ContactForm = () => {
               focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
             {errors.email && (
-              <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+              <p className="text-red-400 text-xs mt-1">
+                {errors.email.message}
+              </p>
             )}
           </motion.div>
 
@@ -116,7 +118,9 @@ const ContactForm = () => {
               focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
             {errors.message && (
-              <p className="text-red-400 text-xs mt-1">{errors.message.message}</p>
+              <p className="text-red-400 text-xs mt-1">
+                {errors.message.message}
+              </p>
             )}
           </motion.div>
 

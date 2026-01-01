@@ -38,15 +38,15 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-<Toaster
-  position="top-center"
-  richColors
-  toastOptions={{
-    style: {
-      textAlign: "center",
-    },
-  }}
-/>
+        <Toaster
+          position="top-center"
+          richColors
+          toastOptions={{
+            style: {
+              textAlign: "center",
+            },
+          }}
+        />
 
         <Routes>
           <Route path="/login" element={<Login />} />
