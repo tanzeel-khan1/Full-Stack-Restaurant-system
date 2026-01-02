@@ -27,6 +27,7 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
+
 // exports.createOrder = async (req, res) => {
 //   const { userId, dishes, totalPrice } = req.body;
 
@@ -37,6 +38,7 @@ exports.getOrderById = async (req, res) => {
 //       userId,   
 //       dishes,
 //       totalPrice,
+//       status: "pending" // ya "abhi aayega"
 //     });
 
 //     const savedOrder = await order.save();
@@ -47,17 +49,38 @@ exports.getOrderById = async (req, res) => {
 //     res.status(500).json({ message: err.message });
 //   }
 // };
+
 exports.createOrder = async (req, res) => {
-  const { userId, dishes, totalPrice } = req.body;
+  const { dishes, totalPrice } = req.body;
 
   try {
-    console.log("Incoming order data:", req.body);
+    const userId = req.user._id; // 🔐 token se user
 
+    // 🔹 Aaj ka start & end time
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
+
+    // 🔍 Check: user ne aaj order kiya hai?
+    const alreadyOrdered = await Order.findOne({
+      userId,
+      createdAt: { $gte: startOfDay, $lte: endOfDay },
+    });
+
+    if (alreadyOrdered) {
+      return res.status(400).json({
+        message: "You can place only one order per day",
+      });
+    }
+
+    // ✅ New order
     const order = new Order({
-      userId,   
+      userId,
       dishes,
       totalPrice,
-      status: "pending" // ya "abhi aayega"
+      status: "pending",
     });
 
     const savedOrder = await order.save();
@@ -68,6 +91,7 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 exports.updateOrder = async (req, res) => {
   try {
@@ -99,25 +123,6 @@ exports.deleteOrder = async (req, res) => {
   }
 };
 
-// exports.getOrdersByUserID = async (req, res) => {
-//   try {
-//     const { userId } = req.params;
-//     console.log("🔎 Searching orders for user:", userId);
-
-//     const orders = await Order.find({ userId }).populate("dishes.dish");
-
-//     console.log("Found orders:", orders);
-
-//     if (!orders || orders.length === 0) {
-//       return res.status(404).json({ message: "No Orders found for this user" });
-//     }
-
-//     res.json(orders);
-//   } catch (err) {
-//     console.error("Error in getOrdersByUserID:", err);
-//     res.status(500).json({ message: err.message });
-//   }
-// };
 exports.getOrdersByUserID = async (req, res) => {
   try {
     const { userId } = req.params;
