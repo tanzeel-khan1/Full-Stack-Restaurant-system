@@ -96,36 +96,71 @@ const Orders = () => {
   /* ===============================
      🧾 CREATE ORDER
   =============================== */
-  const handleCreateOrder = () => {
-    if (!selectedDishes.length) {
-      setErrorMessage("Please select at least one dish");
-      toast.error("Please select at least one dish");
-      return;
-    }
+  // const handleCreateOrder = () => {
+  //   if (!selectedDishes.length) {
+  //     setErrorMessage("Please select at least one dish");
+  //     toast.error("Please select at least one dish");
+  //     return;
+  //   }
 
-    createOrder.mutate(
-      {
-        userId: user._id,
-        dishes: selectedDishes.map((d) => ({
-          dish: d.dish._id,
-          quantity: d.quantity,
-        })),
-        totalPrice,
+  //   createOrder.mutate(
+  //     {
+  //       userId: user._id,
+  //       dishes: selectedDishes.map((d) => ({
+  //         dish: d.dish._id,
+  //         quantity: d.quantity,
+  //       })),
+  //       totalPrice,
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         toast.success("Order placed successfully ✅");
+  //         setSelectedDishes([]);
+  //         localStorage.removeItem("paymentDone");
+  //         navigate("/", { replace: true });
+  //       },
+  //       onError: () => {
+  //         setErrorMessage("Failed to create order");
+  //         toast.error("Failed to create order ❌");
+  //       },
+  //     }
+  //   );
+  // };
+const handleCreateOrder = () => {
+  if (!selectedDishes.length) {
+    toast.error("Please select at least one dish");
+    return;
+  }
+
+  createOrder.mutate(
+    {
+      dishes: selectedDishes.map((d) => ({
+        dish: d.dish._id,
+        quantity: d.quantity,
+      })),
+      totalPrice,
+    },
+    {
+      onSuccess: () => {
+        toast.success("Order placed successfully ");
+        setSelectedDishes([]);
+        localStorage.removeItem("paymentDone");
+        navigate("/", { replace: true });
       },
-      {
-        onSuccess: () => {
-          toast.success("Order placed successfully ✅");
-          setSelectedDishes([]);
-          localStorage.removeItem("paymentDone");
+      onError: (error) => {
+        const message =
+          error?.response?.data?.message || "Failed to create order ❌";
+
+        toast.error(message);
+
+        // 🔒 Agar daily limit hit ho gayi
+        if (message.includes("one order per day")) {
           navigate("/", { replace: true });
-        },
-        onError: () => {
-          setErrorMessage("Failed to create order");
-          toast.error("Failed to create order ❌");
-        },
-      }
-    );
-  };
+        }
+      },
+    }
+  );
+};
 
   /* ===============================
      🖥️ UI
