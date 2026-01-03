@@ -2,44 +2,6 @@ import Attendance from "../models/Attendance.js";
 import User from "../models/User.js";
 import moment from "moment-timezone";
 
-// export const markAttendance = async (req, res) => {
-//   try {
-//     const { userId } = req.body;
-
-//     // ✅ 1. Check user exists
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "User does not exist",
-//       });
-//     }
-
-//     // ✅ Pakistan time
-//     const today = moment()
-//       .tz("Asia/Karachi")
-//       .format("YYYY-MM-DD");
-
-//     const now = moment().tz("Asia/Karachi").toDate();
-
-//     const attendance = await Attendance.findOneAndUpdate(
-//       { userId, date: today },
-//       {
-//         status: "present",
-//         checkIn: now,
-//       },
-//       { upsert: true, new: true }
-//     );
-
-//     res.json({
-//       success: true,
-//       message: "Attendance marked",
-//       attendance,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
 export const markAttendance = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -54,15 +16,9 @@ export const markAttendance = async (req, res) => {
     }
 
     // 2️⃣ Aaj ka din (Date OBJECT — very important)
-    const startOfDay = moment
-      .tz("Asia/Karachi")
-      .startOf("day")
-      .toDate();
+    const startOfDay = moment.tz("Asia/Karachi").startOf("day").toDate();
 
-    const endOfDay = moment
-      .tz("Asia/Karachi")
-      .endOf("day")
-      .toDate();
+    const endOfDay = moment.tz("Asia/Karachi").endOf("day").toDate();
 
     const now = new Date();
 

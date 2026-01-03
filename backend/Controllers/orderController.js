@@ -6,7 +6,7 @@ exports.getOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("dishes.dish", "name price")
-      .populate("userId", "name email"); 
+      .populate("userId", "name email");
     res.json(orders);
   } catch (err) {
     console.error("Get Orders Error:", err);
@@ -26,29 +26,6 @@ exports.getOrderById = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-
-// exports.createOrder = async (req, res) => {
-//   const { userId, dishes, totalPrice } = req.body;
-
-//   try {
-//     console.log("Incoming order data:", req.body);
-
-//     const order = new Order({
-//       userId,   
-//       dishes,
-//       totalPrice,
-//       status: "pending" // ya "abhi aayega"
-//     });
-
-//     const savedOrder = await order.save();
-
-//     res.status(201).json(savedOrder);
-//   } catch (err) {
-//     console.error("Create Order Error:", err);
-//     res.status(500).json({ message: err.message });
-//   }
-// };
 
 exports.createOrder = async (req, res) => {
   const { dishes, totalPrice } = req.body;
@@ -91,7 +68,6 @@ exports.createOrder = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 exports.updateOrder = async (req, res) => {
   try {
@@ -136,8 +112,7 @@ exports.getOrdersByUserID = async (req, res) => {
       });
     }
 
-    const orders = await Order.find({ userId })
-      .populate("dishes.dish");
+    const orders = await Order.find({ userId }).populate("dishes.dish");
 
     console.log("Found orders:", orders.length);
 
@@ -155,7 +130,6 @@ exports.getOrdersByUserID = async (req, res) => {
       success: true,
       orders,
     });
-
   } catch (err) {
     console.error("Error in getOrdersByUserID:", err);
     res.status(500).json({
@@ -170,7 +144,9 @@ exports.markOrderAsCompleted = async (req, res) => {
 
     const order = await Order.findById(id);
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
     order.status = "completed"; // ya "khaya gaya"
@@ -179,7 +155,7 @@ exports.markOrderAsCompleted = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Order marked as completed successfully",
-      order
+      order,
     });
   } catch (err) {
     console.error("Mark Order Completed Error:", err);

@@ -45,24 +45,44 @@ const Tables = () => {
         status: "available",
       },
       {
+        //         onSuccess: (newTable) => {
+        //   // Backend response check
+        //   console.log("NEW TABLE:", newTable);
+
+        //   // Update cache
+        //   queryClient.setQueryData(["tables"], (old) => [...(old || []), newTable]);
+        //   queryClient.invalidateQueries(["tables"]);
+
+        //   // Reset form
+        //   setNumber("");
+        //   setCapacity("");
+        //   setReservationDateTime("");
+        //   setReservationDuration("");
+        //   setCategory("normal");
+
+        //   // Navigate to payment page using correct id
+        //   navigate(`/payment/${newTable.table._id}`); // <--- yahan fix
+        // },
         onSuccess: (newTable) => {
-  // Backend response check
-  console.log("NEW TABLE:", newTable);
+          console.log("NEW TABLE:", newTable);
 
-  // Update cache
-  queryClient.setQueryData(["tables"], (old) => [...(old || []), newTable]);
-  queryClient.invalidateQueries(["tables"]);
+          const tableId = newTable?.table?._id || newTable?._id;
 
-  // Reset form
-  setNumber("");
-  setCapacity("");
-  setReservationDateTime("");
-  setReservationDuration("");
-  setCategory("normal");
+          if (!tableId) {
+            setError("Table ID not received from server");
+            return;
+          }
 
-  // Navigate to payment page using correct id
-  navigate(`/payment/${newTable.table._id}`); // <--- yahan fix
-},
+          queryClient.invalidateQueries(["tables"]);
+
+          setNumber("");
+          setCapacity("");
+          setReservationDateTime("");
+          setReservationDuration("");
+          setCategory("normal");
+
+          navigate(`/payment/${tableId}`);
+        },
 
         onError: (err) => {
           setError(err.message || "Failed to create table");
@@ -73,64 +93,64 @@ const Tables = () => {
 
   return (
     <>
-    <Navbar/>
-    <div className="min-h-screen bg-[#181C14] p-8 flex justify-center items-center">
-      <div className="bg-black/30 shadow-amber-400 backdrop-blur-md rounded-xl p-6 flex flex-col gap-4 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-[#D4AF37] text-shadow-amber-600 text-center mb-4">
-          🍽️ Create Table
-        </h1>
+      <Navbar />
+      <div className="min-h-screen bg-[#181C14] p-8 flex justify-center items-center">
+        <div className="bg-black/30 shadow-amber-400 backdrop-blur-md rounded-xl p-6 flex flex-col gap-4 w-full max-w-md">
+          <h1 className="text-2xl font-bold text-[#D4AF37] text-shadow-amber-600 text-center mb-4">
+            🍽️ Create Table
+          </h1>
 
-        {error && <p className="text-red-400 text-center">{error}</p>}
+          {error && <p className="text-red-400 text-center">{error}</p>}
 
-        <input
-          type="number"
-          placeholder="Table No"
-          value={number}
-          onChange={(e) => setNumber(e.target.value)}
-          className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
-        />
-        <input
-          type="number"
-          placeholder="Capacity"
-          value={capacity}
-          onChange={(e) => setCapacity(e.target.value)}
-          className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
-        />
-        <input
-          type="datetime-local"
-          value={reservationDateTime}
-          onChange={(e) => setReservationDateTime(e.target.value)}
-          className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
-        />
-        <input
-          type="number"
-          placeholder="Duration (minutes)"
-          value={reservationDuration}
-          onChange={(e) => setReservationDuration(e.target.value)}
-          className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
-        />
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded"
-        >
-          <option value="normal">Normal</option>
-          <option value="premium">Premium</option>
-        </select>
+          <input
+            type="number"
+            placeholder="Table No"
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
+          />
+          <input
+            type="number"
+            placeholder="Capacity"
+            value={capacity}
+            onChange={(e) => setCapacity(e.target.value)}
+            className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
+          />
+          <input
+            type="datetime-local"
+            value={reservationDateTime}
+            onChange={(e) => setReservationDateTime(e.target.value)}
+            className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
+          />
+          <input
+            type="number"
+            placeholder="Duration (minutes)"
+            value={reservationDuration}
+            onChange={(e) => setReservationDuration(e.target.value)}
+            className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded focus:outline-none"
+          />
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border border-[#D4AF37] bg-transparent text-[#D4AF37] p-2 rounded"
+          >
+            <option value="normal">Normal</option>
+            <option value="premium">Premium</option>
+          </select>
 
-        <div className="p-2 font-semibold text-[#D4AF37]">
-          Total: {totalAmount.toFixed(2)} USD
+          <div className="p-2 font-semibold text-[#D4AF37]">
+            Total: {totalAmount.toFixed(2)} USD
+          </div>
+
+          <button
+            onClick={handlePayAndBook}
+            disabled={createTable.isLoading}
+            className="bg-[#D4AF37] text-black px-5 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition cursor-pointer"
+          >
+            {createTable.isLoading ? "Processing..." : "Pay & Book"}
+          </button>
         </div>
-
-        <button
-          onClick={handlePayAndBook}
-          disabled={createTable.isLoading}
-          className="bg-[#D4AF37] text-black px-5 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition cursor-pointer"
-        >
-          {createTable.isLoading ? "Processing..." : "Pay & Book"}
-        </button>
       </div>
-    </div>
     </>
   );
 };
