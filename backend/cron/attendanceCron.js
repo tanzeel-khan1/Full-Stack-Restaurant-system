@@ -23,26 +23,43 @@ cron.schedule(
       // ✅ Sirf waiters
       const users = await User.find({ role: "waiter" }).select("_id");
 
-      for (const user of users) {
-        // ✅ Day-range match (string / Date dono cover)
-        const existingAttendance = await Attendance.findOne({
-          userId: user._id,
-          date: {
-            $gte: startOfDay,
-            $lte: endOfDay,
-          },
-        });
+      // for (const user of users) {
+      //   // ✅ Day-range match (string / Date dono cover)
+      //   const existingAttendance = await Attendance.findOne({
+      //     userId: user._id,
+      //     date: {
+      //       $gte: startOfDay,
+      //       $lte: endOfDay,
+      //     },
+      //   });
 
-        // ❌ Agar already present/absent hai → kuch nahi karo
-        if (existingAttendance) continue;
+      //   // ❌ Agar already present/absent hai → kuch nahi karo
+      //   if (existingAttendance) continue;
 
-        // ✅ Nahi hai to absent mark karo
-        await Attendance.create({
-          userId: user._id,
-          date: startOfDay, // hamesha Date object
-          status: "absent",
-        });
-      }
+      //   // ✅ Nahi hai to absent mark karo
+      //   await Attendance.create({
+      //     userId: user._id,
+      //     date: startOfDay, // hamesha Date object
+      //     status: "absent",
+      //   });
+      // }
+for (const user of users) {
+  // find attendance for today
+  const existingAttendance = await Attendance.findOne({
+    userId: user._id,
+    date: startOfDay,
+  });
+
+  // agar present ya leave already hai → skip
+  if (existingAttendance && ["present", "leave"].includes(existingAttendance.status)) continue;
+
+  // nahi → mark absent
+  await Attendance.create({
+    userId: user._id,
+    date: startOfDay,
+    status: "absent",
+  });
+}
 
       console.log("✅ Absent marked correctly (no duplicates)");
     } catch (error) {

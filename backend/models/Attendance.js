@@ -1,5 +1,36 @@
 import mongoose from "mongoose";
 
+// const attendanceSchema = new mongoose.Schema(
+//   {
+//     userId: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "User",
+//       required: true,
+//     },
+
+//     date: {
+//       type: String, // YYYY-MM-DD
+//       required: true,
+//     },
+
+//     status: {
+//       type: String,
+//       enum: ["present", "absent", "leave"],
+//       default: "absent",
+//     },
+
+//     checkIn: {
+//       type: Date,
+//     },
+
+//     checkOut: {
+//       type: Date,
+//     },
+//   },
+//   { timestamps: true }
+// );
+
+// attendanceSchema.index({ userId: 1, date: 1 }, { unique: true });
 const attendanceSchema = new mongoose.Schema(
   {
     userId: {
@@ -19,13 +50,23 @@ const attendanceSchema = new mongoose.Schema(
       default: "absent",
     },
 
-    checkIn: {
-      type: Date,
+    leaveReason: {
+      type: String,
     },
 
-    checkOut: {
-      type: Date,
+    approvalStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "approved",
     },
+
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+
+    checkIn: Date,
+    checkOut: Date,
   },
   { timestamps: true }
 );
