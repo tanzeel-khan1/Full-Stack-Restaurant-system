@@ -162,3 +162,26 @@ exports.markOrderAsCompleted = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+exports.getIncompleteOrders = async (req, res) => {
+  try {
+    const incompleteOrders = await Order.find({
+      status: { $ne: "completed" }, // ❌ completed nahi hone chahiye
+    })
+      .populate("dishes.dish", "name price")
+      .populate("userId", "name email");
+
+    res.status(200).json({
+      success: true,
+      count: incompleteOrders.length,
+      orders: incompleteOrders,
+    });
+  } catch (err) {
+    console.error("Get Incomplete Orders Error:", err);
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
