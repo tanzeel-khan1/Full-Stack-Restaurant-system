@@ -2,10 +2,11 @@ import express from "express";
 import {
   markAttendance,
   getUserAttendance,
-  deleteAttendanceByDate,
+  deleteAttendanceById,
   applyLeave,
   getPendingLeaves,
   leaveDecision,
+  getAllAttendance,
 } from "../Controllers/attendanceController.js";
 
 import { protect, adminOnly } from "../middleware/authMiddleware.js";
@@ -19,7 +20,15 @@ router.post("/mark", markAttendance);
 router.get("/:userId", protect, getUserAttendance);
 router.post("/apply-leave", applyLeave);
 router.get("/pending-leaves", getPendingLeaves);
+router.get("/", getAllAttendance);
+
 // 🔐 Admin-only delete attendance
-router.delete("/delete", protect, adminOnly, deleteAttendanceByDate);
-router.patch("/decision", leaveDecision);
+router.delete(
+  "/delete/:attendanceId",
+  protect,
+  adminOnly,
+  deleteAttendanceById
+);
+router.put("/decision/:attendanceId", protect, leaveDecision);
+
 export default router;

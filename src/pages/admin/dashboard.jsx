@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaTable, FaSignOutAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { Clock } from "lucide-react";
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -37,6 +38,12 @@ export default function AdminDashboard() {
       desc: "View and update pending orders",
       icon: <FaBox />,
       link: "/admin/pending-orders",
+    },
+    {
+      title: "Attendance Dashboard",
+      desc: "View and manage attendance records",
+      icon: <Clock />,
+      link: "/admin/attendance-dashboard",
     },
   ];
 

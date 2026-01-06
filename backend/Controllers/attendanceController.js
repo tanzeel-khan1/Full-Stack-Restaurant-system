@@ -2,55 +2,57 @@ import Attendance from "../models/Attendance.js";
 import User from "../models/User.js";
 import moment from "moment-timezone";
 
+/* MARK ATTENDANCE */
 export const markAttendance = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    // 1️⃣ User check
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User does not exist",
-      });
+      return res
+        .status(404)
+        .json({ success: false, message: "User does not exist" });
     }
 
-    // 2️⃣ Aaj ki date (STRING)
-    const today = moment
-      .tz("Asia/Karachi")
-      .format("YYYY-MM-DD");
+    const today = moment.tz("Asia/Karachi").startOf("day").toDate();
+    const endOfDay = moment(today).endOf("day").toDate();
 
-    // 3️⃣ Check existing attendance
     const existing = await Attendance.findOne({
       userId,
-      date: today,
+      date: { $gte: today, $lte: endOfDay },
     });
 
-    // 🟡 Agar leave lagi hai → PRESENT bana do
-    if (existing && existing.status === "leave") {
-      existing.status = "present";
-      existing.checkIn = new Date();
-      existing.leaveReason = undefined;
-      existing.approvalStatus = "approved";
+    if (existing) {
+      if (existing.status === "leave") {
+        existing.status = "present";
+        existing.checkIn = new Date();
+        existing.leaveReason = undefined;
+        existing.approvalStatus = "approved";
+        await existing.save();
 
-      await existing.save();
+        return res.json({
+          success: true,
+          message: "Leave converted to present",
+          attendance: existing,
+        });
+      }
 
-      return res.json({
-        success: true,
-        message: "Leave converted to present",
-        attendance: existing,
-      });
+      if (existing.status === "present") {
+        return res.status(400).json({
+          success: false,
+          message: "Attendance already marked as present",
+        });
+      }
+
+      if (existing.status === "absent") {
+        return res.status(400).json({
+          success: false,
+          message: "Attendance already marked as absent",
+        });
+      }
     }
 
-    // 🔴 Agar already present
-    if (existing && existing.status === "present") {
-      return res.status(400).json({
-        success: false,
-        message: "Attendance already marked for today",
-      });
-    }
-
-    // 🟢 No record → create present
+    // If no attendance record exists yet
     const attendance = await Attendance.create({
       userId,
       date: today,
@@ -64,10 +66,32 @@ export const markAttendance = async (req, res) => {
       attendance,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/* GET ALL ATTENDANCE (ADMIN) */
+export const getAllAttendance = async (req, res) => {
+  try {
+    const { date } = req.query;
+    let filter = {};
+
+    if (date) {
+      const start = moment
+        .tz(date, "YYYY-MM-DD", "Asia/Karachi")
+        .startOf("day")
+        .toDate();
+      const end = moment(start).endOf("day").toDate();
+      filter.date = { $gte: start, $lte: end };
+    }
+
+    const attendance = await Attendance.find(filter)
+      .populate("userId", "name email role")
+      .sort({ date: -1 });
+
+    res.json({ success: true, totalRecords: attendance.length, attendance });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -77,14 +101,13 @@ export const applyLeave = async (req, res) => {
     const { userId, startDate, endDate, reason } = req.body;
 
     if (!startDate || !endDate || !reason) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
 
-    const start = moment(startDate);
-    const end = moment(endDate);
+    const start = moment.tz(startDate, "Asia/Karachi").startOf("day");
+    const end = moment.tz(endDate, "Asia/Karachi").startOf("day");
 
     if (end.isBefore(start)) {
       return res.status(400).json({
@@ -95,30 +118,29 @@ export const applyLeave = async (req, res) => {
 
     let records = [];
 
-    for (
-      let date = start.clone();
-      date.isSameOrBefore(end);
-      date.add(1, "day")
-    ) {
-      const formattedDate = date.format("YYYY-MM-DD");
+    for (let d = start.clone(); d.isSameOrBefore(end); d.add(1, "day")) {
+      const leaveDate = d.toDate();
+      const endOfDay = moment(leaveDate).endOf("day").toDate();
 
       const exists = await Attendance.findOne({
         userId,
-        date: formattedDate,
+        date: { $gte: leaveDate, $lte: endOfDay },
       });
 
-      if (exists) continue; // skip already marked
+      if (exists) continue;
 
       records.push({
         userId,
-        date: formattedDate,
+        date: leaveDate,
         status: "leave",
         leaveReason: reason,
         approvalStatus: "pending",
       });
     }
 
-    await Attendance.insertMany(records);
+    if (records.length) {
+      await Attendance.insertMany(records);
+    }
 
     res.json({
       success: true,
@@ -126,21 +148,15 @@ export const applyLeave = async (req, res) => {
       totalDays: records.length,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 /* GET USER ATTENDANCE */
 export const getUserAttendance = async (req, res) => {
   try {
     const { userId } = req.params;
-
     const attendance = await Attendance.find({ userId }).sort({ date: -1 });
-
     res.json({ success: true, attendance });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -148,35 +164,20 @@ export const getUserAttendance = async (req, res) => {
 };
 
 /* DELETE ATTENDANCE BY DATE */
-export const deleteAttendanceByDate = async (req, res) => {
+export const deleteAttendanceById = async (req, res) => {
   try {
-    const { userId, date } = req.body;
+    const { attendanceId } = req.params;
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User does not exist",
-      });
-    }
-
-    const formattedDate = moment
-      .tz(date, "YYYY-MM-DD", "Asia/Karachi")
-      .format("YYYY-MM-DD");
-
-    const deleted = await Attendance.findOneAndDelete({
-      userId,
-      date: formattedDate,
-    });
+    const deleted = await Attendance.findByIdAndDelete(attendanceId);
 
     if (!deleted) {
       return res.status(404).json({
         success: false,
-        message: "Attendance not found for this date",
+        message: "Attendance not found",
       });
     }
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Attendance deleted successfully",
       deletedAttendance: deleted,
@@ -189,6 +190,7 @@ export const deleteAttendanceByDate = async (req, res) => {
   }
 };
 
+/* PENDING LEAVES */
 export const getPendingLeaves = async (req, res) => {
   const leaves = await Attendance.find({
     status: "leave",
@@ -198,31 +200,54 @@ export const getPendingLeaves = async (req, res) => {
   res.json({ success: true, leaves });
 };
 
+/* LEAVE DECISION */
+
 export const leaveDecision = async (req, res) => {
-  const { attendanceId, decision } = req.body;
+  try {
+    const { attendanceId } = req.params;
+    const { decision } = req.body;
 
-  if (!["approved", "rejected"].includes(decision)) {
-    return res.status(400).json({
+    if (!["approved", "rejected"].includes(decision)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid decision" });
+    }
+
+    if (req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Not authorized" });
+    }
+
+    const leave = await Attendance.findById(attendanceId);
+    if (!leave) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Leave not found" });
+    }
+
+    if (leave.approvalStatus !== "pending") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Leave already decided" });
+    }
+
+    leave.approvalStatus = decision;
+    leave.approvedBy = req.user.id;
+    leave.approvedAt = new Date();
+
+    await leave.save();
+
+    res.json({
+      success: true,
+      message: `Leave ${decision} successfully`,
+    });
+  } catch (error) {
+    console.error("Leave decision error:", error);
+
+    res.status(500).json({
       success: false,
-      message: "Invalid decision",
+      message: "Server error",
     });
   }
-
-  const leave = await Attendance.findById(attendanceId);
-
-  if (!leave) {
-    return res.status(404).json({
-      success: false,
-      message: "Leave not found",
-    });
-  }
-
-  leave.approvalStatus = decision;
-  leave.approvedBy = req.user.id; // admin id
-  await leave.save();
-
-  res.json({
-    success: true,
-    message: `Leave ${decision}`,
-  });
 };

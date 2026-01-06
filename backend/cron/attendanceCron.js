@@ -4,62 +4,49 @@ import Attendance from "../models/Attendance.js";
 import User from "../models/User.js";
 
 cron.schedule(
-  "34 22 * * *", // 10:25 PM
+  "51 23 * * *", // 10:54 PM
   async () => {
     try {
-      console.log("⏰ 10:34 PM cron running");
+      console.log("⏰ 11:50 PM cron running");
 
-      // ✅ Karachi timezone ke start & end of day
-      const startOfDay = moment
-        .tz("Asia/Karachi")
-        .startOf("day")
-        .toDate();
+      // ✅ Karachi timezone start & end of day
+      const startOfDay = moment.tz("Asia/Karachi").startOf("day").toDate();
 
-      const endOfDay = moment
-        .tz("Asia/Karachi")
-        .endOf("day")
-        .toDate();
+      const endOfDay = moment.tz("Asia/Karachi").endOf("day").toDate();
 
       // ✅ Sirf waiters
       const users = await User.find({ role: "waiter" }).select("_id");
 
-      // for (const user of users) {
-      //   // ✅ Day-range match (string / Date dono cover)
-      //   const existingAttendance = await Attendance.findOne({
-      //     userId: user._id,
-      //     date: {
-      //       $gte: startOfDay,
-      //       $lte: endOfDay,
-      //     },
-      //   });
+      for (const user of users) {
+        // ✅ Date RANGE se check (IMPORTANT)
+        const existingAttendance = await Attendance.findOne({
+          userId: user._id,
+          date: {
+            $gte: startOfDay,
+            $lte: endOfDay,
+          },
+        });
 
-      //   // ❌ Agar already present/absent hai → kuch nahi karo
-      //   if (existingAttendance) continue;
+        // ❌ Agar present ya leave already hai → skip
+        if (
+          existingAttendance &&
+          ["present", "leave"].includes(existingAttendance.status)
+        ) {
+          continue;
+        }
 
-      //   // ✅ Nahi hai to absent mark karo
-      //   await Attendance.create({
-      //     userId: user._id,
-      //     date: startOfDay, // hamesha Date object
-      //     status: "absent",
-      //   });
-      // }
-for (const user of users) {
-  // find attendance for today
-  const existingAttendance = await Attendance.findOne({
-    userId: user._id,
-    date: startOfDay,
-  });
+        // ❌ Agar absent already hai → skip (duplicate na bane)
+        if (existingAttendance && existingAttendance.status === "absent") {
+          continue;
+        }
 
-  // agar present ya leave already hai → skip
-  if (existingAttendance && ["present", "leave"].includes(existingAttendance.status)) continue;
-
-  // nahi → mark absent
-  await Attendance.create({
-    userId: user._id,
-    date: startOfDay,
-    status: "absent",
-  });
-}
+        // ✅ Nahi hai → absent mark karo
+        await Attendance.create({
+          userId: user._id,
+          date: startOfDay, // ✅ Date object only
+          status: "absent",
+        });
+      }
 
       console.log("✅ Absent marked correctly (no duplicates)");
     } catch (error) {

@@ -30,7 +30,7 @@ export const useAttendanceByUser = (userId) => {
     queryKey: ["attendanceByUser", userId],
     queryFn: async () => {
       const { data } = await API.get(`/attendance/user/${userId}`);
-      return data.attendance; // agar sirf array chahiye
+      return data.attendance;
     },
     enabled: !!userId,
   });
@@ -57,10 +57,7 @@ export const useUpdateAttendance = () => {
 
   return useMutation({
     mutationFn: async ({ id, updatedAttendance }) => {
-      const { data } = await API.put(
-        `/attendance/${id}`,
-        updatedAttendance
-      );
+      const { data } = await API.put(`/attendance/${id}`, updatedAttendance);
       return data;
     },
     onSuccess: () => {
@@ -75,7 +72,7 @@ export const useDeleteAttendance = () => {
 
   return useMutation({
     mutationFn: async (id) => {
-      const { data } = await API.delete(`/attendance/${id}`);
+      const { data } = await API.delete(`/attendance/delete/${id}`);
       return data;
     },
     onSuccess: () => {
@@ -90,14 +87,31 @@ export const useApplyLeave = () => {
 
   return useMutation({
     mutationFn: async (leaveData) => {
-      // leaveData = { userId, startDate, endDate, reason }
       const { data } = await API.post("/attendance/apply-leave", leaveData);
       return data;
     },
     onSuccess: () => {
-      // attendance related data refresh ho jaaye
       queryClient.invalidateQueries(["attendance"]);
       queryClient.invalidateQueries(["attendanceByUser"]);
+    },
+  });
+};
+
+// ✅ Approve attendance (NEW)
+
+export const useApproveAttendance = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, decision }) => {
+      const { data } = await API.put(
+        `/attendance/decision/${id}`,
+        { decision } // ✅ body
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["attendance"]);
     },
   });
 };

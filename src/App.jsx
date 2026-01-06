@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
-  useNavigate 
+  useNavigate,
 } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { useEffect } from "react";
@@ -34,6 +34,7 @@ import Leave from "./pages/Leave";
 // Toast
 import { Toaster } from "sonner";
 import PendingOrder from "./pages/PendingOrder";
+import AttendanceDash from "./pages/admin/AttendanceDash";
 
 /* ================= PROTECTED ROUTES ================= */
 
@@ -49,36 +50,6 @@ function AdminRoute({ children }) {
   return children;
 }
 
-
-// function WaiterRoute({ children }) {
-//   const { user } = useAuth();
-//   const location = useLocation();
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (!user) {
-//       navigate("/login", { replace: true });
-//       return;
-//     }
-
-//     if (user.role !== "waiter") {
-//       navigate("/", { replace: true });
-//       return;
-//     }
-
-//     // Allowed routes
-//     const allowedPaths = ["/waiter", "/waiter/attendance", "/waiter/leave"];
-//     if (!allowedPaths.includes(location.pathname)) {
-//       // Force redirect to waiter dashboard
-//       navigate("/waiter", { replace: true });
-//     }
-//   }, [location.pathname, navigate, user]);
-
-//   // Agar user aur route correct hai tabhi children render honge
-//   if (!user || user.role !== "waiter") return null;
-
-//   return children;
-// }
 function WaiterRoute({ children }) {
   const { user } = useAuth();
   const location = useLocation();
@@ -132,7 +103,7 @@ function App() {
         <Routes>
           {/* Public */}
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignupPage />}/>
+          <Route path="/signup" element={<SignupPage />} />
 
           {/* User Routes */}
           <Route
@@ -259,11 +230,19 @@ function App() {
               </AdminRoute>
             }
           />
-           <Route
+          <Route
             path="/admin/pending-orders"
             element={
               <AdminRoute>
                 <PendingOrder />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/attendance-dashboard"
+            element={
+              <AdminRoute>
+                <AttendanceDash />
               </AdminRoute>
             }
           />
