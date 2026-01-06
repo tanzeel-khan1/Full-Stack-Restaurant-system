@@ -32,6 +32,12 @@ export default function AdminDashboard() {
       icon: <FaTable />,
       link: "/admin/tables",
     },
+    {
+      title: "Pending Orders",
+      desc: "View and update pending orders",
+      icon: <FaBox />,
+      link: "/admin/pending-orders",
+    },
   ];
 
   return (

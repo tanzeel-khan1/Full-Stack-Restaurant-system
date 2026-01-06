@@ -38,7 +38,7 @@ const ContactForm = () => {
         setTimeout(() => navigate("/"), 1500);
       },
       onError: () => {
-        toast.error("Something went wrong ❌"); // <-- sonner toast
+        toast.error("Something went wrong "); 
       },
     });
   };

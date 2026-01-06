@@ -22,17 +22,6 @@ export const useOrderById = (orderId) => {
   });
 };
 
-
-// export const useOrdersByUser = (userId) => {
-//   return useQuery({
-//     queryKey: ["ordersByUser", userId],
-//     queryFn: async () => {
-//       const { data } = await API.get(`/orders/user/${userId}`);
-//       return data;
-//     },
-//     enabled: !!userId,
-//   });
-// };
 export const useOrdersByUser = (userId) => {
   return useQuery({
     queryKey: ["ordersByUser", userId],
@@ -80,6 +69,38 @@ export const useDeleteOrder = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["orders"]);
+    },
+  });
+};
+
+export const useIncompleteOrders = () => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryKey: ["incompleteOrders"],
+    queryFn: async () => {
+      const { data } = await API.get("/orders/incomplete");
+      return data.orders;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["orders"]); // refresh all orders if needed
+    },
+  });
+};
+
+// Add this to your hooks file along with your other useOrders hooks
+export const useMarkOrderAsCompleted = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (orderId) => {
+      const { data } = await API.put(`/orders/complete/${orderId}`);
+      return data;
+    },
+    onSuccess: (data) => {
+      // Refresh all orders and the specific order
+      queryClient.invalidateQueries(["orders"]);
+      queryClient.invalidateQueries(["order", data.order._id]);
+      queryClient.invalidateQueries(["incompleteOrders"]);
     },
   });
 };
