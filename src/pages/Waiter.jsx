@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Graph from "./Graph";
 
 const Waiter = () => {
   const navigate = useNavigate();
@@ -98,13 +99,9 @@ const Waiter = () => {
       {/* 🧱 Page Content */}
       <div className="flex items-center justify-center h-[calc(100vh-64px)] px-4 text-center">
         <div className="text-gray-300">
-          <h2 className="text-2xl md:text-3xl font-semibold mb-2">
-            Welcome, Waiter 👋
-          </h2>
-          <p className="text-gray-400 text-sm md:text-base">
-            Use the navigation bar to manage attendance & leave
-          </p>
+         
         </div>
+        <Graph/>
       </div>
 
     </div>

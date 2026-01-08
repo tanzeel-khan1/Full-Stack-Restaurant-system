@@ -29,7 +29,7 @@ export const useAttendanceByUser = (userId) => {
   return useQuery({
     queryKey: ["attendanceByUser", userId],
     queryFn: async () => {
-      const { data } = await API.get(`/attendance/user/${userId}`);
+      const { data } = await API.get(`/attendance/${userId}`);
       return data.attendance;
     },
     enabled: !!userId,
