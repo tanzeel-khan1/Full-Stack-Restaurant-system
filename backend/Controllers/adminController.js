@@ -1,8 +1,21 @@
 import User from "../models/User.js";
 
+// export const getAllUsers = async (req, res) => {
+//   try {
+//     const users = await User.find().select("-password").sort({ createdAt: -1 });
+//     res.json(users);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    const users = await User.find({
+      _id: { $ne: req.userId }, // ✅ logged-in user exclude
+    })
+      .select("-password")
+      .sort({ createdAt: -1 });
+
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });

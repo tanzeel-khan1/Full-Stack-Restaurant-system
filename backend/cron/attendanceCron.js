@@ -4,10 +4,10 @@ import Attendance from "../models/Attendance.js";
 import User from "../models/User.js";
 
 cron.schedule(
-  "51 23 * * *", // 10:54 PM
+"8 0 * * *" ,// 12:10 AM daily
   async () => {
     try {
-      console.log("⏰ 11:50 PM cron running");
+      console.log("⏰ 12:8 AM cron running");
 
       // ✅ Karachi timezone start & end of day
       const startOfDay = moment.tz("Asia/Karachi").startOf("day").toDate();

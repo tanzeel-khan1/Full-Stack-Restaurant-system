@@ -47,37 +47,38 @@ const Graph = () => {
     return grid;
   }, [attendance, year]);
 
-  if (!userId)
-    return <div className="text-red-500">User not found!</div>;
+  if (!userId) return <div className="text-red-500">User not found!</div>;
 
-  if (isLoading)
-    return <div className="text-gray-400">Loading heatmap...</div>;
+  if (isLoading) return <div className="text-gray-400">Loading heatmap...</div>;
 
   return (
-    <div className="bg-[#0d1117] p-4 rounded-lg inline-block text-gray-400 text-xs">
+    <div className="bg-[#0d1117] p-4 rounded-lg inline-block text-gray-400 text-xs w-full md:w-auto">
       {/* ✅ Year Heading */}
       <div className="mb-3 text-sm font-semibold text-gray-300">
         Attendance – {year}
       </div>
 
-      <div className="grid grid-flow-col gap-[3px]">
-        {weeks.map((week, wIndex) => (
-          <div key={wIndex} className="grid grid-rows-7 gap-[3px]">
-            {week.map((cell, dIndex) => (
-              <div
-                key={dIndex}
-                title={
-                  cell.date
-                    ? `${cell.date} • ${cell.status}`
-                    : "No data"
-                }
-                className={`w-[12px] h-[12px] rounded-[2px] ${getGoldenColor(
-                  cell.level
-                )}`}
-              />
-            ))}
-          </div>
-        ))}
+      <div className="overflow-x-auto md:overflow-x-visible -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide">
+        <div className="grid grid-flow-col gap-[3px] min-w-max md:min-w-0">
+          {weeks.map((week, wIndex) => (
+            <div key={wIndex} className="grid grid-rows-7 gap-[3px]">
+              {week.map((cell, dIndex) => (
+                <div
+                  key={dIndex}
+                  title={
+                    cell.date ? `${cell.date} • ${cell.status}` : "No data"
+                  }
+                  className={`
+              w-[10px] h-[10px] 
+              md:w-[12px] md:h-[12px]
+              rounded-[2px]
+              ${getGoldenColor(cell.level)}
+            `}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -103,9 +104,9 @@ const getGoldenColor = (level) => {
     case 0:
       return "bg-[#161b22]";
     case 1:
-      return "bg-[#453200]"; // absent
+      return "bg-red-800"; // absent
     case 2:
-      return "bg-[#7d5a00]"; // leave
+      return "bg-blue-400"; // leave
     case 4:
       return "bg-[#ffd700]"; // present
     default:

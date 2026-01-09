@@ -23,7 +23,7 @@ export default function AdminDashboard() {
     },
     {
       title: "Manage Orders",
-      desc: "Track and update customer orders",
+      desc: "All Orders completed and pending",
       icon: <FaBox />,
       link: "/admin/orders",
     },
