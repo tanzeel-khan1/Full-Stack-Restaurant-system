@@ -10,42 +10,83 @@ const Graph = () => {
   // ✅ Decide correct year (current year)
   const year = new Date().getFullYear();
 
-  const weeks = useMemo(() => {
-    // 53 weeks to safely cover full year
-    const grid = Array.from({ length: 53 }, () =>
-      Array.from({ length: 7 }, () => ({
-        level: 0,
-        date: null,
-        status: null,
-      }))
+  // const weeks = useMemo(() => {
+  //   // 53 weeks to safely cover full year
+  //   const grid = Array.from({ length: 53 }, () =>
+  //     Array.from({ length: 7 }, () => ({
+  //       level: 0,
+  //       date: null,
+  //       status: null,
+  //     }))
+  //   );
+
+  //   attendance.forEach((item) => {
+  //     const date = new Date(item.date);
+
+  //     // ❌ Skip other years
+  //     if (date.getFullYear() !== year) return;
+
+  //     const startOfYear = new Date(year, 0, 1);
+
+  //     const dayOfYear = Math.floor(
+  //       (date - startOfYear) / (1000 * 60 * 60 * 24)
+  //     );
+
+  //     const weekIndex = Math.floor(dayOfYear / 7);
+  //     const dayIndex = (date.getDay() + 6) % 7; // Monday first
+
+  //     if (weekIndex < 53) {
+  //       grid[weekIndex][dayIndex] = {
+  //         level: getLevelFromStatus(item.status),
+  //         date: date.toDateString(),
+  //         status: item.status,
+  //       };
+  //     }
+  //   });
+
+  //   return grid;
+  // }, [attendance, year]);
+const weeks = useMemo(() => {
+  const grid = Array.from({ length: 53 }, () =>
+    Array.from({ length: 7 }, () => ({
+      level: 0,
+      date: null,
+      status: null,
+    }))
+  );
+
+  // ✅ Start from first Monday of the year
+  const startOfYear = new Date(year, 0, 1);
+  const startDay = startOfYear.getDay(); // 0 = Sun
+  const firstMonday =
+    startDay === 0
+      ? new Date(year, 0, 2)
+      : new Date(year, 0, 1 + (8 - startDay));
+
+  attendance.forEach((item) => {
+    const date = new Date(item.date);
+    if (date.getFullYear() !== year) return;
+
+    const diffDays = Math.floor(
+      (date - firstMonday) / (1000 * 60 * 60 * 24)
     );
 
-    attendance.forEach((item) => {
-      const date = new Date(item.date);
+    if (diffDays < 0) return;
 
-      // ❌ Skip other years
-      if (date.getFullYear() !== year) return;
+    const weekIndex = Math.floor(diffDays / 7);
+    const dayIndex = (date.getDay() + 6) % 7; // Monday first
 
-      const startOfYear = new Date(year, 0, 1);
+    if (weekIndex < 53) {
+      grid[weekIndex][dayIndex] = {
+        level: getLevelFromStatus(item.status),
+        date: date.toDateString(),
+        status: item.status,
+      };
+    }
+  });
 
-      const dayOfYear = Math.floor(
-        (date - startOfYear) / (1000 * 60 * 60 * 24)
-      );
-
-      const weekIndex = Math.floor(dayOfYear / 7);
-      const dayIndex = (date.getDay() + 6) % 7; // Monday first
-
-      if (weekIndex < 53) {
-        grid[weekIndex][dayIndex] = {
-          level: getLevelFromStatus(item.status),
-          date: date.toDateString(),
-          status: item.status,
-        };
-      }
-    });
-
-    return grid;
-  }, [attendance, year]);
+  return grid;
+}, [attendance, year]);
 
   if (!userId) return <div className="text-red-500">User not found!</div>;
 

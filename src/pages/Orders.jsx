@@ -1,23 +1,24 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast, Toaster } from "sonner"; // <-- sonner
+import { toast, Toaster } from "sonner";
 import { useCreateOrder } from "../hooks/useOrders";
 import API from "../utils/api";
 
 const Orders = () => {
+  const { tableId } = useParams(); // Get tableId from URL
+  const navigate = useNavigate();
+  const createOrder = useCreateOrder();
+
   const [dishes, setDishes] = useState([]);
   const [selectedDishes, setSelectedDishes] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
-  const createOrder = useCreateOrder();
 
   /* ===============================
      🔐 ACCESS CONTROL
   =============================== */
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    const paymentDone = localStorage.getItem("paymentDone");
 
     if (!user) {
       toast.error("Please login first");
@@ -25,12 +26,12 @@ const Orders = () => {
       return;
     }
 
-    if (!paymentDone) {
-      toast.error("Please complete payment first");
-      navigate("/payment", { replace: true });
+    if (!tableId) {
+      toast.error("No table selected!");
+      navigate("/", { replace: true });
       return;
     }
-  }, [navigate]);
+  }, [navigate, tableId]);
 
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -44,7 +45,7 @@ const Orders = () => {
   }, []);
 
   /* ===============================
-     ➕ ADD DISH
+     ➕ ADD / MANAGE DISHES
   =============================== */
   const addDish = (dish) => {
     const exists = selectedDishes.find((d) => d.dish._id === dish._id);
@@ -60,9 +61,6 @@ const Orders = () => {
     }
   };
 
-  /* ===============================
-     ➕➖ QUANTITY
-  =============================== */
   const increaseQty = (id) => {
     setSelectedDishes(
       selectedDishes.map((d) =>
@@ -86,7 +84,7 @@ const Orders = () => {
   };
 
   /* ===============================
-     💰 TOTAL
+     💰 TOTAL PRICE
   =============================== */
   const totalPrice = selectedDishes.reduce(
     (sum, d) => sum + d.dish.price * d.quantity,
@@ -96,79 +94,69 @@ const Orders = () => {
   /* ===============================
      🧾 CREATE ORDER
   =============================== */
-  // const handleCreateOrder = () => {
-  //   if (!selectedDishes.length) {
-  //     setErrorMessage("Please select at least one dish");
-  //     toast.error("Please select at least one dish");
-  //     return;
-  //   }
-
-  //   createOrder.mutate(
-  //     {
-  //       userId: user._id,
-  //       dishes: selectedDishes.map((d) => ({
-  //         dish: d.dish._id,
-  //         quantity: d.quantity,
-  //       })),
-  //       totalPrice,
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         toast.success("Order placed successfully ✅");
-  //         setSelectedDishes([]);
-  //         localStorage.removeItem("paymentDone");
-  //         navigate("/", { replace: true });
-  //       },
-  //       onError: () => {
-  //         setErrorMessage("Failed to create order");
-  //         toast.error("Failed to create order ❌");
-  //       },
-  //     }
-  //   );
-  // };
-const handleCreateOrder = () => {
-  if (!selectedDishes.length) {
-    toast.error("Please select at least one dish");
-    return;
-  }
-
-  createOrder.mutate(
-    {
-      dishes: selectedDishes.map((d) => ({
-        dish: d.dish._id,
-        quantity: d.quantity,
-      })),
-      totalPrice,
-    },
-    {
-      onSuccess: () => {
-        toast.success("Order placed successfully ");
-        setSelectedDishes([]);
-        localStorage.removeItem("paymentDone");
-        navigate("/", { replace: true });
-      },
-      onError: (error) => {
-        const message =
-          error?.response?.data?.message || "Failed to create order ❌";
-
-        toast.error(message);
-
-        // 🔒 Agar daily limit hit ho gayi
-        if (message.includes("one order per day")) {
-          navigate("/", { replace: true });
-        }
-      },
+  const handleCreateOrder = () => {
+    if (!selectedDishes.length) {
+      toast.error("Please select at least one dish");
+      return;
     }
-  );
-};
+
+    // createOrder.mutate(
+    //   {
+    //     userId: user._id,
+    //     tableId, // Attach tableId
+    //     dishes: selectedDishes.map((d) => ({
+    //       dish: d.dish._id,
+    //       quantity: d.quantity,
+    //     })),
+    //     totalPrice,
+    //   },
+    //   {
+    //     onSuccess: (res) => {
+    //       toast.success("Order placed successfully ✅");
+    //       setSelectedDishes([]);
+    //       localStorage.removeItem("paymentDone");
+
+    //       // Optional: Navigate to order confirmation page
+    //       navigate(`/order/${tableId}/confirmation`);
+    //     },
+    //     onError: (error) => {
+    //       const message =
+    //         error?.response?.data?.message || "Failed to create order ❌";
+    //       toast.error(message);
+    //     },
+    //   }
+    // );
+  createOrder.mutate(
+  {
+    tableId,
+    dishes: selectedDishes.map((d) => ({
+      dish: d.dish._id,
+      quantity: d.quantity,
+    })),
+    totalPrice,
+  },
+  {
+    onSuccess: () => {
+      toast.success("Order placed successfully ");
+      setSelectedDishes([]);
+      navigate(`/orders/${tableId}/confirmation`);
+    },
+    onError: (error) => {
+      const message =
+        error?.response?.data?.message || "Failed to create order ❌";
+      toast.error(message);
+    },
+  }
+);
+
+  };
 
   /* ===============================
      🖥️ UI
   =============================== */
   return (
     <div className="p-6 min-h-screen bg-[#181C14] text-[#D4AF37]">
-      {/* <Toaster position="top-right" richColors /> */}
-
+      <Toaster position="top-right" richColors />
       <h1 className="text-3xl font-bold text-center mb-6">
         Create Your Order 🍽️
       </h1>

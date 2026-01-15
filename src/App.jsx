@@ -123,7 +123,7 @@ function App() {
             }
           />
           <Route
-            path="/orders"
+            path="/orders/:tableId"
             element={
               <PrivateRoute>
                 <Orders />

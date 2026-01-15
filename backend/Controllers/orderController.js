@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Dish = require("../models/Dish");
+const Table = require("../models/Table");
 const mongoose = require("mongoose");
 
 exports.getOrders = async (req, res) => {
@@ -27,20 +28,67 @@ exports.getOrderById = async (req, res) => {
   }
 };
 
+// exports.createOrder = async (req, res) => {
+//   const { dishes, totalPrice } = req.body;
+
+//   try {
+//     const userId = req.user._id; // 🔐 token se user
+
+//     // 🔹 Aaj ka start & end time
+//     const startOfDay = new Date();
+//     startOfDay.setHours(0, 0, 0, 0);
+
+//     const endOfDay = new Date();
+//     endOfDay.setHours(23, 59, 59, 999);
+
+//     // 🔍 Check: user ne aaj order kiya hai?
+//     const alreadyOrdered = await Order.findOne({
+//       userId,
+//       createdAt: { $gte: startOfDay, $lte: endOfDay },
+//     });
+
+//     if (alreadyOrdered) {
+//       return res.status(400).json({
+//         message: "You can place only one order per day",
+//       });
+//     }
+
+//     // ✅ New order
+//     const order = new Order({
+//       userId,
+//       dishes,
+//       totalPrice,
+//       status: "pending",
+//     });
+
+//     const savedOrder = await order.save();
+
+//     res.status(201).json(savedOrder);
+//   } catch (err) {
+//     console.error("Create Order Error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 exports.createOrder = async (req, res) => {
-  const { dishes, totalPrice } = req.body;
+  const { dishes, totalPrice, tableId } = req.body;
 
   try {
-    const userId = req.user._id; // 🔐 token se user
+    const userId = req.user._id;
 
-    // 🔹 Aaj ka start & end time
+    // 🔒 Basic validation
+    if (!dishes || dishes.length === 0 || !totalPrice) {
+      return res.status(400).json({
+        success: false,
+        message: "Dishes and total price are required",
+      });
+    }
+
+    // 🕒 One order per day per user
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
-
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
 
-    // 🔍 Check: user ne aaj order kiya hai?
     const alreadyOrdered = await Order.findOne({
       userId,
       createdAt: { $gte: startOfDay, $lte: endOfDay },
@@ -48,24 +96,52 @@ exports.createOrder = async (req, res) => {
 
     if (alreadyOrdered) {
       return res.status(400).json({
+        success: false,
         message: "You can place only one order per day",
       });
     }
 
-    // ✅ New order
+    // 🪑 Table fetch (status check removed)
+    let table = null;
+    if (tableId) {
+      table = await Table.findById(tableId);
+
+      if (!table) {
+        return res.status(404).json({
+          success: false,
+          message: "Table not found",
+        });
+      }
+    }
+
+    // ✅ Create order
     const order = new Order({
       userId,
       dishes,
       totalPrice,
+      tableId: table ? table._id : null,
       status: "pending",
     });
 
     const savedOrder = await order.save();
 
-    res.status(201).json(savedOrder);
+    // 🔁 Table mark as occupied (optional, can remove if not needed)
+    if (table) {
+      table.status = "occupied";
+      await table.save();
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Order placed successfully",
+      order: savedOrder,
+    });
   } catch (err) {
     console.error("Create Order Error:", err);
-    res.status(500).json({ message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
   }
 };
 
@@ -138,28 +214,71 @@ exports.getOrdersByUserID = async (req, res) => {
     });
   }
 };
+// exports.markOrderAsCompleted = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const order = await Order.findById(id);
+//     if (!order) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Order not found" });
+//     }
+
+//     order.status = "completed"; // ya "khaya gaya"
+//     await order.save();
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Order marked as completed successfully",
+//       order,
+//     });
+//   } catch (err) {
+//     console.error("Mark Order Completed Error:", err);
+//     res.status(500).json({ success: false, message: err.message });
+//   }
+// };
 exports.markOrderAsCompleted = async (req, res) => {
   try {
     const { id } = req.params;
 
     const order = await Order.findById(id);
     if (!order) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
     }
 
-    order.status = "completed"; // ya "khaya gaya"
+    // ✅ Order complete
+    order.status = "completed";
     await order.save();
+
+    // ✅ Table free / available
+    if (order.tableId) {
+      await Table.findByIdAndUpdate(
+        order.tableId,
+        {
+          status: "available",
+          reservationDateTime: null,
+          reservationDuration: null,
+          reservationEndTime: null
+        }
+      );
+    }
 
     res.status(200).json({
       success: true,
-      message: "Order marked as completed successfully",
-      order,
+      message: "Order completed & table released",
+      order
     });
+
   } catch (err) {
     console.error("Mark Order Completed Error:", err);
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
 
