@@ -11,6 +11,7 @@ import orderRoutes from "./routes/orders.js";
 import adminRoutes from "./routes/admin.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 import "./cron/attendanceCron.js"; // ✅ cron auto start
 
@@ -39,6 +40,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/reviews", reviewRoutes); // ✅ review routes
 
 app.get("/", (req, res) => {
   res.send("Restaurant API is running...");

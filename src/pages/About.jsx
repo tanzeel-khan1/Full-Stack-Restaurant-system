@@ -3,6 +3,9 @@ import { MdDinnerDining, MdFamilyRestroom } from "react-icons/md";
 import { CiDeliveryTruck } from "react-icons/ci";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion";
+import Footer from "./Footer";
+import { Link } from "react-router-dom";
+
 
 const AboutPage = () => {
   return (
@@ -18,11 +21,11 @@ const AboutPage = () => {
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              About <span className="text-[#D4AF37]">BABARBHAI</span>
+              About <span className="text-[#D4AF37]">FineTaste Restaurant</span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
               Where authentic flavors meet modern dining experience. Serving
-              Karachi's finest cuisine since our beginning.
+              US finest cuisine since our beginning.
             </p>
           </div>
         </motion.div>
@@ -39,7 +42,7 @@ const AboutPage = () => {
                 Our journey
               </h2>
               <p className="text-lg text-gray-200 leading-relaxed">
-                BABARBHAI began as a dream to bring authentic Pakistani flavors
+              FineTaste Restaurant began as a dream to bring authentic Pakistani flavors
                 to food lovers across Karachi. Founded with a passion for
                 traditional recipes and a commitment to quality, we have been
                 serving our community with love and dedication.
@@ -143,23 +146,24 @@ const AboutPage = () => {
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
             <h3 className="text-3xl md:text-4xl font-bold mb-6">
               Ready to Experience{" "}
-              <span className="text-[#D4AF37]">BABARBHAI</span>?
+              <span className="text-[#D4AF37]">FineTaste Restaurant</span> ?
             </h3>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
               Join us for an unforgettable dining experience where tradition
               meets taste. Book your table today or order online for delivery.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-[#D4AF37] cursor-pointer hover:bg-[#B8941F] text-[#36454f] px-8 py-4 rounded-lg font-bold text-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
+              <Link 
+              to="/tables"
+              className="bg-[#D4AF37] cursor-pointer hover:bg-[#B8941F] text-[#36454f] px-8 py-4 rounded-lg font-bold text-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
                 Book a Table
-              </button>
-              <button className="border-2 cursor-pointer border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36454f] px-8 py-4 rounded-lg font-bold text-lg transition-colors duration-200">
-                Order Online
-              </button>
+              </Link>
+              
             </div>
           </div>
         </motion.div>
       </div>
+      <Footer/>
     </>
   );
 };

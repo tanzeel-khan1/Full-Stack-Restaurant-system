@@ -1,35 +1,3 @@
-
-// const mongoose = require("mongoose");
-
-// const orderSchema = new mongoose.Schema(
-//   {
-//     dishes: [
-//       {
-//         dish: {
-//           type: mongoose.Schema.Types.ObjectId,
-//           ref: "Dish",
-//           required: true,
-//         },
-//         quantity: { type: Number, required: true },
-//       },
-//     ],
-//     totalPrice: { type: Number, required: true },
-//     userId: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "User",
-//       required: true,
-//     },
-//     status: {
-//       type: String,
-//       enum: ["pending", "completed"],
-//       default: "pending",
-//     },
-//     completedAt: { type: Date },
-//   },
-//   { timestamps: true } // 👈 BEST PRACTICE
-// );
-
-// module.exports = mongoose.model("Order", orderSchema);
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(

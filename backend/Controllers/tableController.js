@@ -1,6 +1,7 @@
 
 const Table = require("../models/Table");
 const mongoose = require("mongoose");
+const Order = require("../models/Order"); // ✅ THIS WAS MISSING
 
 exports.getTables = async (req, res) => {
   try {
@@ -21,67 +22,6 @@ exports.getTableById = async (req, res) => {
   }
 };
 
-
-// exports.createTable = async (req, res) => {
-//   const {
-//     number,
-//     capacity,
-//     reservationDateTime,
-//     reservationDuration,
-//     category
-//   } = req.body;
-
-//   try {
-//     if (!number || !capacity || !reservationDateTime || !reservationDuration) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Required fields are missing"
-//       });
-//     }
-
-//     const startTime = new Date(reservationDateTime);
-//     const endTime = new Date(startTime.getTime() + reservationDuration * 60000);
-
-//     const existingReservation = await Table.findOne({
-//       number,
-//       status: { $in: ["reserved", "pending"] },
-//       reservationEndTime: { $gt: new Date() }
-//     });
-
-//     if (existingReservation) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Table already pending or reserved"
-//       });
-//     }
-
-//     // 🔐 IMPORTANT: status force pending
-//     const table = new Table({
-//       number,
-//       capacity,
-//       reservationDateTime: startTime,
-//       reservationDuration,
-//       reservationEndTime: endTime,
-//       category: category || "normal",
-//       userId: req.user._id,
-//       status: "pending" // 👈 hard coded, client se nahi
-//     });
-
-//     const savedTable = await table.save();
-
-//     res.status(201).json({
-//       success: true,
-//       message: "Table created. Waiting for admin approval.",
-//       table: savedTable
-//     });
-
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message
-//     });
-//   }
-// };
 exports.createTable = async (req, res) => {
   const {
     number,
@@ -138,6 +78,19 @@ exports.createTable = async (req, res) => {
       });
     }
 
+    /* ================= PRICE CALCULATION ================= */
+
+    const PRICE_PER_SEAT_PER_HOUR = 100;
+    const PREMIUM_MULTIPLIER = 1.7;
+
+    const price =
+      capacity *
+      PRICE_PER_SEAT_PER_HOUR *
+      (reservationDuration / 60) *
+      (category === "premium" ? PREMIUM_MULTIPLIER : 1);
+
+    /* ================= SAVE TABLE ================= */
+
     const table = new Table({
       number,
       capacity,
@@ -145,6 +98,7 @@ exports.createTable = async (req, res) => {
       reservationDuration,
       reservationEndTime: endTime,
       category: category || "normal",
+      price: Number(price.toFixed(2)), // ✅ DB me save hoga
       userId: req.user._id,
       status: "pending"
     });
@@ -164,6 +118,90 @@ exports.createTable = async (req, res) => {
     });
   }
 };
+
+
+// exports.createTable = async (req, res) => {
+//   const {
+//     number,
+//     capacity,
+//     reservationDateTime,
+//     reservationDuration,
+//     category
+//   } = req.body;
+
+//   try {
+//     if (!number || !capacity || !reservationDateTime || !reservationDuration) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Required fields are missing"
+//       });
+//     }
+
+//     const startTime = new Date(reservationDateTime);
+//     const endTime = new Date(startTime.getTime() + reservationDuration * 60000);
+
+//     // 🔒 SAME USER — SAME DAY CHECK
+//     const startOfDay = new Date(startTime);
+//     startOfDay.setHours(0, 0, 0, 0);
+
+//     const endOfDay = new Date(startTime);
+//     endOfDay.setHours(23, 59, 59, 999);
+
+//     const existingUserReservation = await Table.findOne({
+//       userId: req.user._id,
+//       reservationDateTime: {
+//         $gte: startOfDay,
+//         $lte: endOfDay
+//       }
+//     });
+
+//     if (existingUserReservation) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "You can create only one table per day"
+//       });
+//     }
+
+//     // 🔁 SAME TABLE NUMBER CHECK
+//     const existingReservation = await Table.findOne({
+//       number,
+//       status: { $in: ["reserved", "pending"] },
+//       reservationEndTime: { $gt: new Date() }
+//     });
+
+//     if (existingReservation) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Table already pending or reserved"
+//       });
+//     }
+
+//     const table = new Table({
+//       number,
+//       capacity,
+//       reservationDateTime: startTime,
+//       reservationDuration,
+//       reservationEndTime: endTime,
+//       category: category || "normal",
+//       userId: req.user._id,
+//       status: "pending"
+//     });
+
+//     const savedTable = await table.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Table created. Waiting for admin approval.",
+//       table: savedTable
+//     });
+
+//   } catch (err) {
+//     res.status(500).json({
+//       success: false,
+//       message: err.message
+//     });
+//   }
+// };
 
 
 // Step 2: Process payment and confirm reservation
@@ -326,3 +364,4 @@ exports.cancelReservation = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+

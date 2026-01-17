@@ -7,3 +7,12 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+::selection {
+  background: #D4AF37;
+  color: #181C14;
+}
+
+::-moz-selection {
+  background: #D4AF37;
+  color: #181C14;
+}

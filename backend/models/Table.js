@@ -1,65 +1,3 @@
-// const mongoose = require("mongoose");
-
-// const tableSchema = new mongoose.Schema({
-//   number: { 
-//     type: Number, 
-//     required: true 
-//   },
-
-//   capacity: { 
-//     type: Number, 
-//     required: true 
-//   },
-
-//   status: { 
-//     type: String, 
-//     enum: ["available", "reserved", "occupied", "pending"], 
-//     default: "pending" // 👈 user create kare to pending
-//   },
-
-//   reservationDateTime: { 
-//     type: Date 
-//   },
-
-//   reservationDuration: { 
-//     type: Number // minutes
-//   },
-
-//   reservationEndTime: { 
-//     type: Date 
-//   },
-
-//   category: { 
-//     type: String, 
-//     enum: ["premium", "normal"], 
-//     default: "normal" 
-//   },
-
-//   userId: { 
-//     type: mongoose.Schema.Types.ObjectId, 
-//     ref: "User" 
-//   }
-
-// }, {
-//   timestamps: true
-// });
-
-// // 🔹 reservationEndTime auto calculate
-// tableSchema.pre("save", function (next) {
-//   if (this.reservationDateTime && this.reservationDuration) {
-//     this.reservationEndTime = new Date(
-//       this.reservationDateTime.getTime() + this.reservationDuration * 60000
-//     );
-//   }
-//   next();
-// });
-
-// // 🔹 Indexes
-// tableSchema.index({ number: 1, status: 1 });
-// tableSchema.index({ userId: 1 });
-// tableSchema.index({ reservationEndTime: 1 });
-
-// module.exports = mongoose.model("Table", tableSchema);
 const mongoose = require("mongoose");
 
 const tableSchema = new mongoose.Schema({
@@ -71,6 +9,10 @@ const tableSchema = new mongoose.Schema({
   capacity: { 
     type: Number, 
     required: true 
+  },
+  price: {
+    type: Number,
+    required: false, // per reservation / per table
   },
 
   status: { 

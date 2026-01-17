@@ -127,7 +127,7 @@ const Hero = () => {
                     color: "#000",
                   }}
                   whileTap={{ scale: 0.95 }}
-                  className="rounded-full border border-orange-400/60 px-8 py-3 text-sm font-medium text-orange-400"
+                  className=" cursor-pointer  rounded-full border border-orange-400/60 px-8 py-3 text-sm font-medium text-orange-400"
                 >
                   View Menu
                 </motion.button>

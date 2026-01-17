@@ -9,6 +9,9 @@ import { MdAttachEmail } from "react-icons/md";
 import { PiCarSimpleLight } from "react-icons/pi";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
+import Footer from "./Footer";
+import { Link } from "react-router-dom";
+import { ArrowBigRight } from "lucide-react";
 
 const LocationPage = () => {
   return (
@@ -89,7 +92,7 @@ const LocationPage = () => {
                     <p className="text-gray-200 leading-relaxed">
                       123 Business Street
                       <br />
-                      Block A, Gulshan-e-Iqbal
+                      Luxury Ave, Gourmet City
                       <br />
                       Karachi, Sindh 75300
                       <br />
@@ -129,7 +132,7 @@ const LocationPage = () => {
                     <div>
                       <p className="text-sm text-gray-200">Email</p>
                       <p className="font-semibold text-amber-500">
-                        info@babarbhai.com
+                        FineTasteRestaurant@gmail.com
                       </p>
                     </div>
                   </div>
@@ -211,16 +214,15 @@ const LocationPage = () => {
               Can't find us? Give us a call and we'll guide you step by step.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-[#D4AF37] hover:bg-[#B8941F] cursor-pointer text-[#36454f] px-8 py-3 rounded-lg font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl">
-                Call Now
-              </button>
-              <button className="border-2 cursor-pointer border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#36454f] px-8 py-3 rounded-lg font-semibold transition-colors duration-200">
-                Get Directions
-              </button>
+            <Link to="/Contact" className="bg-[#D4AF37] hover:bg-[#B8941F] cursor-pointer text-[#36454f] px-8 py-3 rounded-lg font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl flex items-center gap-2">
+  Contact Now <ArrowBigRight />
+</Link>
+
             </div>
           </motion.div>
         </div>
       </div>
+      <Footer />
     </>
   );
 };

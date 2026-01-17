@@ -27,19 +27,47 @@ const Footer = () => {
         <div>
           <h4 className="mb-4 font-medium text-lg">Follow Us</h4>
           <div className="flex gap-4">
-            <a href="#" className="transition hover:text-white">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-white"
+            >
               Instagram
             </a>
-            <a href="#" className="transition hover:text-white">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-white"
+            >
               Facebook
             </a>
-            <a href="#" className="transition hover:text-white">
+            <a
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-white"
+            >
               Twitter
             </a>
           </div>
+
           <p className="mt-6 text-sm text-[#D4AF37]/70">
-            © {new Date().getFullYear()} FineTaste Restaurant. All rights
-            reserved.
+            © {new Date().getFullYear()} FineTaste Restaurant. All rights reserved.
+          </p>
+
+          {/* Developer */}
+          <p className="mt-2 text-xs text-[#D4AF37]/60">
+            Developed by{" "}
+            <a
+              href="https://portfolio-theta-seven-52.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-white hover:text-[#D4AF37] transition"
+            >
+              Tanzeel
+            </a>
           </p>
         </div>
       </div>

@@ -104,3 +104,14 @@ export const useMarkOrderAsCompleted = () => {
     },
   });
 };
+
+export const useOrdersByUserNameAndDate = ({ name, date }) => {
+  return useQuery({
+    queryKey: ["ordersByUserAndDate", name, date],
+    queryFn: async () => {
+      const { data } = await API.post("/orders/getname", { name, date });
+      return data.orders; // only return the orders array
+    },
+    enabled: !!name && !!date, // only fetch if both are provided
+  });
+};

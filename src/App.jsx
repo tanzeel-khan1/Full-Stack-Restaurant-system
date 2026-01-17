@@ -35,6 +35,7 @@ import Leave from "./pages/Leave";
 import { Toaster } from "sonner";
 import PendingOrder from "./pages/PendingOrder";
 import AttendanceDash from "./pages/admin/AttendanceDash";
+import GetByDate from "./pages/admin/GetByDate";
 
 /* ================= PROTECTED ROUTES ================= */
 
@@ -90,7 +91,8 @@ function WaiterRoute({ children }) {
 
 function App() {
   return (
-    <AuthProvider>
+   <div className="bg-[#181C14]">
+     <AuthProvider>
       <Router>
         <Toaster
           position="top-center"
@@ -239,6 +241,14 @@ function App() {
             }
           />
           <Route
+            path="/admin/date"
+            element={
+              <AdminRoute>
+                <GetByDate />
+              </AdminRoute>
+            }
+          />
+          <Route
             path="/admin/attendance-dashboard"
             element={
               <AdminRoute>
@@ -276,6 +286,7 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
+   </div>
   );
 }
 
