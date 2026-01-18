@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,41 +22,52 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <h1 className="text-amber-400 md:ml-0 ml-2 font-bold text-xl sm:text-2xl lg:text-3xl tracking-wider hover:text-amber-300 transition-colors duration-300 cursor-pointer">
-            FineTaste Restaurant
+              FineTaste Restaurant
             </h1>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-            <a
-              href="/dashboard"
-              className="text-amber-400 hover:text-amber-500 px-3 py-2 text-sm lg:text-base font-medium transition-all duration-300 hover:scale-105 relative group"
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `text-amber-400 px-3 py-2 text-sm font-medium relative
+     ${isActive ? "border-b-2 border-amber-400" : ""}`
+              }
             >
-              Dashboard
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a
-              href="/about"
-              className="text-amber-400 hover:text-amber-400 px-3 py-2 text-sm lg:text-base font-medium transition-all duration-300 hover:scale-105 relative group"
+              DashBoard
+            </NavLink>
+
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                `text-amber-400 px-3 py-2 text-sm font-medium relative
+     ${isActive ? "border-b-2 border-amber-400" : ""}`
+              }
             >
               About
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
+            </NavLink>
 
-            <a
-              href="/location"
-              className="text-amber-400 hover:text-amber-400 px-3 py-2 text-sm lg:text-base font-medium transition-all duration-300 hover:scale-105 relative group"
+            <NavLink
+              to="/location"
+              className={({ isActive }) =>
+                `text-amber-400 px-3 py-2 text-sm font-medium relative
+     ${isActive ? "border-b-2 border-amber-400" : ""}`
+              }
             >
               Location
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
-            <a
-              href="/contact"
-              className="text-amber-400 hover:text-amber-400 px-3 py-2 text-sm lg:text-base font-medium transition-all duration-300 hover:scale-105 relative group"
+            </NavLink>
+
+            <NavLink
+              to="/contact"
+              className={({ isActive }) =>
+                `text-amber-400 px-3 py-2 text-sm font-medium relative
+     ${isActive ? "border-b-2 border-amber-400" : ""}`
+              }
             >
               Contact
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-400 group-hover:w-full transition-all duration-300"></span>
-            </a>
+            </NavLink>
+
             <a
               href="/profile"
               className="bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-600 hover:to-amber-500 text-slate-800 px-4 lg:px-6 py-2 rounded-lg text-sm lg:text-base font-semibold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 transform"

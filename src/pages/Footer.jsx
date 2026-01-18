@@ -28,7 +28,7 @@ const Footer = () => {
           <h4 className="mb-4 font-medium text-lg">Follow Us</h4>
           <div className="flex gap-4">
             <a
-              href="#"
+              href="https://www.instagram.com/tanzeelkhanpak"
               target="_blank"
               rel="noopener noreferrer"
               className="transition hover:text-white"
@@ -36,7 +36,7 @@ const Footer = () => {
               Instagram
             </a>
             <a
-              href="#"
+              href="https://www.facebook.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="transition hover:text-white"
@@ -44,7 +44,7 @@ const Footer = () => {
               Facebook
             </a>
             <a
-              href="#"
+              href="https://x.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="transition hover:text-white"

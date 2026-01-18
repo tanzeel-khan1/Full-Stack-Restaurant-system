@@ -25,7 +25,7 @@ router.post("/", protect, createOrder);
 router.post("/getname", getOrdersByUserNameAndDate)
 
 // 🔹 Clear & safe routes (NO conflict)
-router.get("/:userId", protect, getOrdersByUserID);
+router.get("/user/:userId", protect, getOrdersByUserID);
 router.get("/by-id/:id", protect, getOrderById);
 router.get("/by-username/:name",  getOrdersByUserName);
 

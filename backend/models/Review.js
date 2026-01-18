@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
 
+
 const restaurantReviewSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+    },
+    userName: {          // ✅ Add this field
+      type: String,
       required: true,
     },
     restaurant: {
@@ -16,7 +21,7 @@ const restaurantReviewSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
       required: true,
-      unique: true // ❗ ek order = ek review
+      unique: true // ek order = ek review
     },
     rating: {
       type: Number,

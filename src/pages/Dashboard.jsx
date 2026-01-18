@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import Menu from "./Menu";
 import { Link } from "react-router-dom";
 import { useRef } from "react";
+import AllReviews from "./AllReviews";
 
 /* ================= VARIANTS ================= */
 
@@ -147,7 +148,7 @@ const Hero = () => {
           <Menu />
         </div>
       </motion.div>
-
+  <AllReviews/>
       <Footer />
     </>
   );

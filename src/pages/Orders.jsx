@@ -53,8 +53,8 @@ const Orders = () => {
     if (exists) {
       setSelectedDishes(
         selectedDishes.map((d) =>
-          d.dish._id === dish._id ? { ...d, quantity: d.quantity + 1 } : d
-        )
+          d.dish._id === dish._id ? { ...d, quantity: d.quantity + 1 } : d,
+        ),
       );
     } else {
       setSelectedDishes([...selectedDishes, { dish, quantity: 1 }]);
@@ -64,8 +64,8 @@ const Orders = () => {
   const increaseQty = (id) => {
     setSelectedDishes(
       selectedDishes.map((d) =>
-        d.dish._id === id ? { ...d, quantity: d.quantity + 1 } : d
-      )
+        d.dish._id === id ? { ...d, quantity: d.quantity + 1 } : d,
+      ),
     );
   };
 
@@ -73,9 +73,9 @@ const Orders = () => {
     setSelectedDishes(
       selectedDishes
         .map((d) =>
-          d.dish._id === id ? { ...d, quantity: d.quantity - 1 } : d
+          d.dish._id === id ? { ...d, quantity: d.quantity - 1 } : d,
         )
-        .filter((d) => d.quantity > 0)
+        .filter((d) => d.quantity > 0),
     );
   };
 
@@ -88,67 +88,103 @@ const Orders = () => {
   =============================== */
   const totalPrice = selectedDishes.reduce(
     (sum, d) => sum + d.dish.price * d.quantity,
-    0
+    0,
   );
 
   /* ===============================
      🧾 CREATE ORDER
   =============================== */
+  //   const handleCreateOrder = () => {
+  //     if (!selectedDishes.length) {
+  //       toast.error("Please select at least one dish");
+  //       return;
+  //     }
+
+  //     // createOrder.mutate(
+  //     //   {
+  //     //     userId: user._id,
+  //     //     tableId, // Attach tableId
+  //     //     dishes: selectedDishes.map((d) => ({
+  //     //       dish: d.dish._id,
+  //     //       quantity: d.quantity,
+  //     //     })),
+  //     //     totalPrice,
+  //     //   },
+  //     //   {
+  //     //     onSuccess: (res) => {
+  //     //       toast.success("Order placed successfully ✅");
+  //     //       setSelectedDishes([]);
+  //     //       localStorage.removeItem("paymentDone");
+
+  //     //       // Optional: Navigate to order confirmation page
+  //     //       navigate(`/order/${tableId}/confirmation`);
+  //     //     },
+  //     //     onError: (error) => {
+  //     //       const message =
+  //     //         error?.response?.data?.message || "Failed to create order ❌";
+  //     //       toast.error(message);
+  //     //     },
+  //     //   }
+  //     // );
+  //   createOrder.mutate(
+  //   {
+  //     tableId,
+  //     dishes: selectedDishes.map((d) => ({
+  //       dish: d.dish._id,
+  //       quantity: d.quantity,
+  //     })),
+  //     totalPrice,
+  //   },
+  //   {
+  //     onSuccess: () => {
+  //       toast.success("Order placed successfully ");
+  //       setSelectedDishes([]);
+  //       navigate(`/orders/${tableId}/confirmation`);
+  //     },
+  //     onError: (error) => {
+  //       const message =
+  //         error?.response?.data?.message || "Failed to create order ❌";
+  //       toast.error(message);
+  //     },
+  //   }
+  // );
+
+  //   };
   const handleCreateOrder = () => {
     if (!selectedDishes.length) {
       toast.error("Please select at least one dish");
       return;
     }
 
-    // createOrder.mutate(
-    //   {
-    //     userId: user._id,
-    //     tableId, // Attach tableId
-    //     dishes: selectedDishes.map((d) => ({
-    //       dish: d.dish._id,
-    //       quantity: d.quantity,
-    //     })),
-    //     totalPrice,
-    //   },
-    //   {
-    //     onSuccess: (res) => {
-    //       toast.success("Order placed successfully ✅");
-    //       setSelectedDishes([]);
-    //       localStorage.removeItem("paymentDone");
+    createOrder.mutate(
+      {
+        tableId,
+        dishes: selectedDishes.map((d) => ({
+          dish: d.dish._id,
+          quantity: d.quantity,
+        })),
+        totalPrice,
+      },
+      {
+        onSuccess: (res) => {
+          toast.success("Order placed successfully, please give a review! ");
+          setSelectedDishes([]);
 
-    //       // Optional: Navigate to order confirmation page
-    //       navigate(`/order/${tableId}/confirmation`);
-    //     },
-    //     onError: (error) => {
-    //       const message =
-    //         error?.response?.data?.message || "Failed to create order ❌";
-    //       toast.error(message);
-    //     },
-    //   }
-    // );
-  createOrder.mutate(
-  {
-    tableId,
-    dishes: selectedDishes.map((d) => ({
-      dish: d.dish._id,
-      quantity: d.quantity,
-    })),
-    totalPrice,
-  },
-  {
-    onSuccess: () => {
-      toast.success("Order placed successfully ");
-      setSelectedDishes([]);
-      navigate(`/orders/${tableId}/confirmation`);
-    },
-    onError: (error) => {
-      const message =
-        error?.response?.data?.message || "Failed to create order ❌";
-      toast.error(message);
-    },
-  }
-);
+          if (!res?.order?._id) {
+            toast.error("Order ID not found");
+            return;
+          }
 
+          navigate(`/reviews/${res.order._id}`);
+        },
+
+        onError: (error) => {
+          const message =
+            error?.response?.data?.message || "Failed to create order ❌";
+          toast.error(message);
+        },
+      },
+    );
   };
 
   /* ===============================

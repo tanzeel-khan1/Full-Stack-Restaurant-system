@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FaUsers, FaBox, FaTable, FaSignOutAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Clock, PersonStanding } from "lucide-react";
+import { MdReviews } from "react-icons/md";
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
@@ -49,6 +50,12 @@ export default function AdminDashboard() {
       title: "Get Order By name",
       icon: <PersonStanding />,
       link: "/admin/date",
+    },
+    {
+      title: "All Reviews",
+      desc: "View and manage all reviews",
+      icon: <MdReviews />,
+      link: "/admin/review",
     },
   ];
 

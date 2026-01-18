@@ -69,22 +69,16 @@ function GetTablebyuserid() {
                 <span className="font-medium text-amber-400">
                   {table.category}
                 </span>
+                
               </div>
-              <div className="flex justify-between bg-[#09122C] px-3 py-2 rounded-lg text-gray-200">
-                <span>paymentStatus
-                </span>
+            </div>
+             <div className="flex justify-between bg-[#09122C] px-3 py-2 rounded-lg text-gray-200">
+                <span>Total</span>
                 <span className="font-medium text-amber-400">
-                  {table.paymentStatus
-                  }
+                  {table.price}
                 </span>
+                
               </div>
-            </div>
-
-            <div className="text-right">
-              <p className="text-lg font-bold text-amber-400">
-                Total: ${table.totalAmount || 0}
-              </p>
-            </div>
           </div>
         ))}
       </div>

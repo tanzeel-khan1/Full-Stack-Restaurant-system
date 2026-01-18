@@ -36,6 +36,8 @@ import { Toaster } from "sonner";
 import PendingOrder from "./pages/PendingOrder";
 import AttendanceDash from "./pages/admin/AttendanceDash";
 import GetByDate from "./pages/admin/GetByDate";
+import CreateReview from "./pages/CreateReview";
+import GetAllR from "./pages/admin/GetAllR";
 
 /* ================= PROTECTED ROUTES ================= */
 
@@ -141,6 +143,14 @@ function App() {
             }
           />
           <Route
+            path="/reviews/:orderId"
+            element={
+              <PrivateRoute>
+                <CreateReview />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/payment/:tableId"
             element={
               <PrivateRoute>
@@ -237,6 +247,14 @@ function App() {
             element={
               <AdminRoute>
                 <PendingOrder />
+              </AdminRoute>
+            }
+          />
+           <Route
+            path="/admin/review"
+            element={
+              <AdminRoute>
+                <GetAllR />
               </AdminRoute>
             }
           />

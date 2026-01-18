@@ -57,7 +57,7 @@ const Tables = () => {
   //     : 0;
   const PRICE_PER_SEAT_PER_HOUR = 100;
   const PREMIUM_MULTIPLIER = 1.7;
-  
+
   const price =
     capacity && reservationDuration
       ? Number(capacity) *
@@ -112,7 +112,7 @@ const Tables = () => {
     if (!number || !capacity || !reservationDateTime || !reservationDuration) {
       return toast.error("Fill all fields");
     }
-  
+
     createTable.mutate(
       {
         number: Number(number),
@@ -129,15 +129,15 @@ const Tables = () => {
           if (!tableId) {
             return toast.error("Table ID not received from server");
           }
-  
+
           queryClient.invalidateQueries(["tables"]);
-  
+
           setNumber("");
           setCapacity("");
           setReservationDateTime("");
           setReservationDuration("");
           setCategory("normal");
-  
+
           toast.success("Table successfully booked!");
           navigate(`/orders/${tableId}`);
         },
@@ -146,13 +146,12 @@ const Tables = () => {
             err?.response?.data?.message ||
             err.message ||
             "Failed to create table";
-  
+
           toast.error(serverMessage);
         },
-      }
+      },
     );
   };
-  
 
   return (
     <>
@@ -234,29 +233,21 @@ const Tables = () => {
             <option value="premium">Premium</option>
           </motion.select>
 
-          {/* <motion.div
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
             className="p-2 font-semibold text-[#D4AF37]"
           >
-            Total: {totalAmount.toFixed(2)} USD
-          </motion.div> */}
-<motion.div
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ delay: 0.4 }}
-  className="p-2 font-semibold text-[#D4AF37]"
->
-  Total: {price.toFixed(2)} USD
-</motion.div>
+            Total: {price.toFixed(2)} USD
+          </motion.div>
 
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             disabled={createTable.isLoading}
             onClick={handlePayAndBook}
-            className="bg-[#D4AF37] text-black px-5 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition"
+            className="bg-[#D4AF37] cursor-pointer text-black px-5 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition"
           >
             {createTable.isLoading ? "Processing..." : "Pay & Book"}
           </motion.button>
